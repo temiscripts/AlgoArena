@@ -6,8 +6,9 @@ import clangUrl from '@/assets/sounds/clang.mp3';
 import clashUrl from '@/assets/sounds/clash.mp3';
 import victoryUrl from '@/assets/sounds/victory.mp3';
 import growlUrl from '@/assets/sounds/growl.mp3';
+import hoverUrl from '@/assets/sounds/hover.mp3';
 
-export type SoundName = 'clang' | 'clash' | 'victory' | 'growl';
+export type SoundName = 'clang' | 'clash' | 'victory' | 'growl' | 'hover';
 
 interface SoundDef {
   url: string;
@@ -21,6 +22,8 @@ const SOUNDS: Record<SoundName, SoundDef> = {
   // Throttled so two panels finishing back-to-back don't overlap fanfares.
   victory: { url: victoryUrl, defaultVolume: 0.5, throttleMs: 1500 },
   growl: { url: growlUrl, defaultVolume: 0.55, throttleMs: 300 },
+  // Hover plays often; keep volume low and throttle hard so rapid mouse sweeps don't roar.
+  hover: { url: hoverUrl, defaultVolume: 0.12, throttleMs: 220 },
 };
 
 let ctx: AudioContext | null = null;
