@@ -8,6 +8,7 @@ import { PathfindingPreview } from './previews/PathfindingPreview';
 import { AdversarialPreview } from './previews/AdversarialPreview';
 import { QuizPreview } from './previews/QuizPreview';
 import { DiscoveryPreview } from './previews/DiscoveryPreview';
+import { TournamentPreview } from './previews/TournamentPreview';
 import { HallPreview } from './previews/HallPreview';
 import { DemoCinematic } from './DemoCinematic';
 import { StatsTicker } from './StatsTicker';
@@ -47,6 +48,13 @@ const ARENAS: ArenaTile[] = [
     tagline: 'Every beast has a nightmare. Summon the worst input. Watch it fall.',
     accent: 'gold',
     Preview: AdversarialPreview,
+  },
+  {
+    id: 'tournament',
+    title: 'Tournament',
+    tagline: 'Four beasts. Two semifinals. One throne. Pick the bracket and crown a champion.',
+    accent: 'crimson',
+    Preview: TournamentPreview,
   },
   {
     id: 'quiz',

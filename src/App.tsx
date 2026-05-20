@@ -6,6 +6,7 @@ import { HallOfBeasts } from './pages/HallOfBeasts';
 import { AdversarialMode } from './modes/AdversarialMode';
 import { QuizMode } from './modes/QuizMode';
 import { ComplexityDiscovery } from './modes/ComplexityDiscovery';
+import { Tournament } from './modes/Tournament';
 import { Home } from './pages/Home';
 import { useMuted } from './lib/useMuted';
 import { preloadAll } from './lib/sound';
@@ -17,6 +18,7 @@ export type Page =
   | 'adversarial'
   | 'quiz'
   | 'discovery'
+  | 'tournament'
   | 'hall';
 
 const NAV: { id: Page; label: string }[] = [
@@ -24,6 +26,7 @@ const NAV: { id: Page; label: string }[] = [
   { id: 'sorting', label: 'Sorting' },
   { id: 'pathfinding', label: 'Pathfinding' },
   { id: 'adversarial', label: 'Adversarial' },
+  { id: 'tournament', label: 'Tournament' },
   { id: 'quiz', label: 'Big-O Trial' },
   { id: 'discovery', label: 'Discovery' },
   { id: 'hall', label: 'Hall of Beasts' },
@@ -99,6 +102,7 @@ export default function App() {
         {page === 'adversarial' && <AdversarialMode />}
         {page === 'quiz' && <QuizMode />}
         {page === 'discovery' && <ComplexityDiscovery />}
+        {page === 'tournament' && <Tournament />}
         {page === 'hall' && <HallOfBeasts />}
       </main>
 
