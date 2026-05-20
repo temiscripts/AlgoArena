@@ -11,6 +11,11 @@ import { dfs } from './pathfinding/dfs';
 import { dijkstra } from './pathfinding/dijkstra';
 import { astar } from './pathfinding/astar';
 
+import type { SearchAlgorithm } from './searching/types';
+import { linearSearch } from './searching/linear';
+import { binarySearch } from './searching/binary';
+import { interpolationSearch } from './searching/interpolation';
+
 export const SORT_ALGORITHMS: Record<string, SortAlgorithm> = {
   [bubbleSort.id]: bubbleSort,
   [insertionSort.id]: insertionSort,
@@ -42,4 +47,18 @@ export function getPath(id: string): PathAlgorithm {
   return algo;
 }
 
-export const ALL_ALGORITHMS = [...SORT_ALGORITHM_LIST, ...PATH_ALGORITHM_LIST];
+export const SEARCH_ALGORITHMS: Record<string, SearchAlgorithm> = {
+  [linearSearch.id]: linearSearch,
+  [binarySearch.id]: binarySearch,
+  [interpolationSearch.id]: interpolationSearch,
+};
+
+export const SEARCH_ALGORITHM_LIST: SearchAlgorithm[] = Object.values(SEARCH_ALGORITHMS);
+
+export function getSearch(id: string): SearchAlgorithm {
+  const algo = SEARCH_ALGORITHMS[id];
+  if (!algo) throw new Error(`Unknown search algorithm: ${id}`);
+  return algo;
+}
+
+export const ALL_ALGORITHMS = [...SORT_ALGORITHM_LIST, ...PATH_ALGORITHM_LIST, ...SEARCH_ALGORITHM_LIST];

@@ -5,6 +5,7 @@ import type { Page } from '@/App';
 import { play } from '@/lib/sound';
 import { SortingPreview } from './previews/SortingPreview';
 import { PathfindingPreview } from './previews/PathfindingPreview';
+import { SearchingPreview } from './previews/SearchingPreview';
 import { AdversarialPreview } from './previews/AdversarialPreview';
 import { QuizPreview } from './previews/QuizPreview';
 import { DiscoveryPreview } from './previews/DiscoveryPreview';
@@ -41,6 +42,13 @@ const ARENAS: ArenaTile[] = [
     tagline: 'BFS floods. DFS dives. Dijkstra weighs. The Oracle simply knows.',
     accent: 'teal',
     Preview: PathfindingPreview,
+  },
+  {
+    id: 'searching',
+    title: 'Searching Arena',
+    tagline: 'One sorted line. One target. The beast that asks fewest wins.',
+    accent: 'teal',
+    Preview: SearchingPreview,
   },
   {
     id: 'adversarial',

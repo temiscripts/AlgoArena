@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { SortingArena } from './arenas/SortingArena';
 import { PathfindingArena } from './arenas/PathfindingArena';
+import { SearchingArena } from './arenas/SearchingArena';
 import { HallOfBeasts } from './pages/HallOfBeasts';
 import { AdversarialMode } from './modes/AdversarialMode';
 import { QuizMode } from './modes/QuizMode';
@@ -16,6 +17,7 @@ export type Page =
   | 'home'
   | 'sorting'
   | 'pathfinding'
+  | 'searching'
   | 'adversarial'
   | 'quiz'
   | 'discovery'
@@ -26,6 +28,7 @@ const NAV: { id: Page; label: string }[] = [
   { id: 'home', label: 'Home' },
   { id: 'sorting', label: 'Sorting' },
   { id: 'pathfinding', label: 'Pathfinding' },
+  { id: 'searching', label: 'Searching' },
   { id: 'adversarial', label: 'Adversarial' },
   { id: 'tournament', label: 'Tournament' },
   { id: 'quiz', label: 'Big-O Trial' },
@@ -114,6 +117,7 @@ export default function App() {
         {page === 'home' && <Home navigate={navigate} />}
         {page === 'sorting' && <SortingArena />}
         {page === 'pathfinding' && <PathfindingArena />}
+        {page === 'searching' && <SearchingArena />}
         {page === 'adversarial' && <AdversarialMode />}
         {page === 'quiz' && <QuizMode />}
         {page === 'discovery' && <ComplexityDiscovery />}
