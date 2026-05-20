@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { SortingArena } from './arenas/SortingArena';
 import { PathfindingArena } from './arenas/PathfindingArena';
@@ -10,6 +10,7 @@ import { Tournament } from './modes/Tournament';
 import { Home } from './pages/Home';
 import { useMuted } from './lib/useMuted';
 import { preloadAll } from './lib/sound';
+import { clearHash, readBattleFromHash } from './lib/battleUrl';
 
 export type Page =
   | 'home'
@@ -32,9 +33,23 @@ const NAV: { id: Page; label: string }[] = [
   { id: 'hall', label: 'Hall of Beasts' },
 ];
 
+function initialPageFromHash(): Page {
+  if (typeof window === 'undefined') return 'home';
+  const battle = readBattleFromHash();
+  if (battle?.mode === 'sort') return 'sorting';
+  if (battle?.mode === 'path') return 'pathfinding';
+  return 'home';
+}
+
 export default function App() {
-  const [page, setPage] = useState<Page>('home');
+  const [page, setPage] = useState<Page>(initialPageFromHash);
   const [muted, setMuted] = useMuted();
+
+  // Nav clicks always start fresh; only inbound share links carry hash state.
+  const navigate = useCallback((p: Page) => {
+    clearHash();
+    setPage(p);
+  }, []);
 
   // Warm the audio buffers on first interaction so the first clang isn't delayed.
   useEffect(() => {
@@ -57,7 +72,7 @@ export default function App() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-4 md:flex-row">
           <button
             className="flex items-baseline gap-3"
-            onClick={() => setPage('home')}
+            onClick={() => navigate('home')}
           >
             <h1 className="font-display text-2xl tracking-[0.25em] uppercase text-parchment">
               AlgoArena
@@ -71,7 +86,7 @@ export default function App() {
               {NAV.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setPage(item.id)}
+                  onClick={() => navigate(item.id)}
                   className={clsx(
                     'rounded-md px-3 py-1 font-display text-xs uppercase tracking-[0.25em] transition',
                     page === item.id
@@ -96,7 +111,7 @@ export default function App() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        {page === 'home' && <Home navigate={setPage} />}
+        {page === 'home' && <Home navigate={navigate} />}
         {page === 'sorting' && <SortingArena />}
         {page === 'pathfinding' && <PathfindingArena />}
         {page === 'adversarial' && <AdversarialMode />}

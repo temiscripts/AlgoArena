@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { SORT_ALGORITHM_LIST, getSort } from '@/algorithms';
 import { FighterPanel } from './FighterPanel';
 import { generateArray, type Workload } from '@/lib/workloadGen';
 import { play } from '@/lib/sound';
+import { buildShareUrl, copyText, readBattleFromHash } from '@/lib/battleUrl';
 
 const WORKLOADS: { id: Workload; label: string }[] = [
   { id: 'random', label: 'Random' },
@@ -19,17 +20,24 @@ interface FinishRecord {
   writes: number;
 }
 
+// Pre-resolve any battle URL hash so the initial render already reflects the
+// shared params — avoids a visual flicker between defaults and the replay.
+const initialBattle = typeof window !== 'undefined' ? readBattleFromHash() : null;
+const initialSort = initialBattle?.mode === 'sort' ? initialBattle : null;
+
 export function SortingArena() {
-  const [leftId, setLeftId] = useState('quick');
-  const [rightId, setRightId] = useState('bubble');
-  const [size, setSize] = useState(80);
-  const [speed, setSpeed] = useState(6);
-  const [workload, setWorkload] = useState<Workload>('random');
-  const [seed, setSeed] = useState(1);
+  const [leftId, setLeftId] = useState(initialSort?.left ?? 'quick');
+  const [rightId, setRightId] = useState(initialSort?.right ?? 'bubble');
+  const [size, setSize] = useState(initialSort?.size ?? 80);
+  const [speed, setSpeed] = useState(initialSort?.speed ?? 6);
+  const [workload, setWorkload] = useState<Workload>(initialSort?.workload ?? 'random');
+  const [seed, setSeed] = useState(initialSort?.seed ?? 1);
   const [runId, setRunId] = useState(0);
   const [paused, setPaused] = useState(false);
   const [leftFinish, setLeftFinish] = useState<FinishRecord | null>(null);
   const [rightFinish, setRightFinish] = useState<FinishRecord | null>(null);
+  const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle');
+  const autoEngagedRef = useRef(false);
 
   const leftAlgo = useMemo(() => getSort(leftId), [leftId]);
   const rightAlgo = useMemo(() => getSort(rightId), [rightId]);
@@ -42,6 +50,29 @@ export function SortingArena() {
     setPaused(false);
     setRunId((r) => r + 1);
     play('clash');
+  };
+
+  // Auto-engage once if landed from a share URL.
+  useEffect(() => {
+    if (autoEngagedRef.current || !initialSort) return;
+    autoEngagedRef.current = true;
+    startRace();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleShare = async () => {
+    const url = buildShareUrl({
+      mode: 'sort',
+      left: leftId,
+      right: rightId,
+      workload,
+      size,
+      seed,
+      speed,
+    });
+    const ok = await copyText(url);
+    setCopyState(ok ? 'ok' : 'fail');
+    window.setTimeout(() => setCopyState('idle'), 1800);
   };
 
   const newInput = () => {
@@ -127,6 +158,13 @@ export function SortingArena() {
             )}
             <button className="btn" onClick={newInput}>
               New Input
+            </button>
+            <button
+              className="btn"
+              onClick={handleShare}
+              title="Copy a shareable URL that replays this exact battle"
+            >
+              {copyState === 'ok' ? 'Copied ✓' : copyState === 'fail' ? 'Copy Failed' : 'Share Battle'}
             </button>
           </div>
         </div>

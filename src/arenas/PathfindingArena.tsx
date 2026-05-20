@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PATH_ALGORITHM_LIST, getPath } from '@/algorithms';
 import { PathFighter } from './PathFighter';
 import { GridCanvas } from './GridCanvas';
 import { generateGrid, type MazeStyle } from '@/lib/mazeGen';
 import { makeInitialState, type Grid } from '@/algorithms/pathfinding/types';
 import { play } from '@/lib/sound';
+import { buildShareUrl, copyText, readBattleFromHash } from '@/lib/battleUrl';
 
 const STYLES: { id: MazeStyle; label: string }[] = [
   { id: 'open', label: 'Open Field' },
@@ -16,17 +17,22 @@ const STYLES: { id: MazeStyle; label: string }[] = [
 const ROWS = 22;
 const COLS = 38;
 
+const initialPathBattle = typeof window !== 'undefined' ? readBattleFromHash() : null;
+const initialPath = initialPathBattle?.mode === 'path' ? initialPathBattle : null;
+
 export function PathfindingArena() {
-  const [leftId, setLeftId] = useState('astar');
-  const [rightId, setRightId] = useState('dijkstra');
-  const [style, setStyle] = useState<MazeStyle>('sparse-walls');
-  const [seed, setSeed] = useState(1);
-  const [speed, setSpeed] = useState(4);
+  const [leftId, setLeftId] = useState(initialPath?.left ?? 'astar');
+  const [rightId, setRightId] = useState(initialPath?.right ?? 'dijkstra');
+  const [style, setStyle] = useState<MazeStyle>(initialPath?.style ?? 'sparse-walls');
+  const [seed, setSeed] = useState(initialPath?.seed ?? 1);
+  const [speed, setSpeed] = useState(initialPath?.speed ?? 4);
   const [runId, setRunId] = useState(0);
   const [paused, setPaused] = useState(false);
   const [editing, setEditing] = useState(false);
   const [leftFinish, setLeftFinish] = useState<null | { ms: number; expansions: number; pathLen: number; found: boolean }>(null);
   const [rightFinish, setRightFinish] = useState<null | { ms: number; expansions: number; pathLen: number; found: boolean }>(null);
+  const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle');
+  const autoEngagedRef = useRef(false);
 
   const [gridOverride, setGridOverride] = useState<Grid | null>(null);
   const baseGrid = useMemo(() => generateGrid(ROWS, COLS, style, seed), [style, seed]);
@@ -44,6 +50,27 @@ export function PathfindingArena() {
     setEditing(false);
     setRunId((r) => r + 1);
     play('clash');
+  };
+
+  useEffect(() => {
+    if (autoEngagedRef.current || !initialPath) return;
+    autoEngagedRef.current = true;
+    startRace();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleShare = async () => {
+    const url = buildShareUrl({
+      mode: 'path',
+      left: leftId,
+      right: rightId,
+      style,
+      seed,
+      speed,
+    });
+    const ok = await copyText(url);
+    setCopyState(ok ? 'ok' : 'fail');
+    window.setTimeout(() => setCopyState('idle'), 1800);
   };
 
   const newMaze = () => {
@@ -149,6 +176,13 @@ export function PathfindingArena() {
             )}
             <button className="btn" onClick={newMaze}>
               New Maze
+            </button>
+            <button
+              className="btn"
+              onClick={handleShare}
+              title="Copy a shareable URL that replays this maze + beasts"
+            >
+              {copyState === 'ok' ? 'Copied ✓' : copyState === 'fail' ? 'Copy Failed' : 'Share Battle'}
             </button>
           </div>
         </div>
