@@ -2,8 +2,47 @@
 // O(n log n) on every input. The reliable warhorse, paid for in O(n) memory.
 
 import { beastFor } from '@/beasts/lore';
-import type { SortAlgorithm, SortState } from '../types';
+import type { OpCounts, SortAlgorithm, SortState } from '../types';
 import { generateArray } from '@/lib/workloadGen';
+
+function mergeCount(input: number[]): OpCounts {
+  const arr = input.slice();
+  let comparisons = 0;
+  let writes = 0;
+
+  function mergeRange(lo: number, mid: number, hi: number) {
+    const left = arr.slice(lo, mid + 1);
+    const right = arr.slice(mid + 1, hi + 1);
+    let i = 0;
+    let j = 0;
+    let k = lo;
+    while (i < left.length && j < right.length) {
+      comparisons++;
+      if (left[i] <= right[j]) arr[k++] = left[i++];
+      else arr[k++] = right[j++];
+      writes++;
+    }
+    while (i < left.length) {
+      arr[k++] = left[i++];
+      writes++;
+    }
+    while (j < right.length) {
+      arr[k++] = right[j++];
+      writes++;
+    }
+  }
+
+  function ms(lo: number, hi: number) {
+    if (lo >= hi) return;
+    const mid = Math.floor((lo + hi) / 2);
+    ms(lo, mid);
+    ms(mid + 1, hi);
+    mergeRange(lo, mid, hi);
+  }
+
+  ms(0, arr.length - 1);
+  return { comparisons, writes };
+}
 
 function* mergeSteps(input: number[]): Generator<SortState> {
   const arr = input.slice();
@@ -84,6 +123,7 @@ export const mergeSort: SortAlgorithm = {
     return last ?? { array: input.slice(), comparisons: 0, writes: 0, done: true, highlights: {} };
   },
   steps: mergeSteps,
+  count: mergeCount,
   worstCaseInput: (size) => generateArray(size, 'reversed'),
   bestCaseInput: (size) => generateArray(size, 'sorted'),
 };

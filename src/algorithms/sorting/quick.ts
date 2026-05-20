@@ -4,8 +4,46 @@
 // demo work clearly. The Adversarial Mode exploits this directly.
 
 import { beastFor } from '@/beasts/lore';
-import type { SortAlgorithm, SortState } from '../types';
+import type { OpCounts, SortAlgorithm, SortState } from '../types';
 import { generateArray } from '@/lib/workloadGen';
+
+function quickCount(input: number[]): OpCounts {
+  const arr = input.slice();
+  let comparisons = 0;
+  let writes = 0;
+
+  function partition(lo: number, hi: number): number {
+    const pivot = arr[hi];
+    let i = lo - 1;
+    for (let j = lo; j < hi; j++) {
+      comparisons++;
+      if (arr[j] <= pivot) {
+        i++;
+        if (i !== j) {
+          const tmp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = tmp;
+          writes += 2;
+        }
+      }
+    }
+    const tmp = arr[i + 1];
+    arr[i + 1] = arr[hi];
+    arr[hi] = tmp;
+    writes += 2;
+    return i + 1;
+  }
+
+  function qs(lo: number, hi: number) {
+    if (lo >= hi) return;
+    const p = partition(lo, hi);
+    qs(lo, p - 1);
+    qs(p + 1, hi);
+  }
+
+  qs(0, arr.length - 1);
+  return { comparisons, writes };
+}
 
 function* quickSteps(input: number[]): Generator<SortState> {
   const arr = input.slice();
@@ -77,6 +115,7 @@ export const quickSort: SortAlgorithm = {
     return last ?? { array: input.slice(), comparisons: 0, writes: 0, done: true, highlights: {} };
   },
   steps: quickSteps,
+  count: quickCount,
   // Lomuto with last-element pivot → already-sorted is the worst case.
   worstCaseInput: (size) => generateArray(size, 'sorted'),
   bestCaseInput: (size) => generateArray(size, 'random', 7),

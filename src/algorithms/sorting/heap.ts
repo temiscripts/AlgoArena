@@ -2,8 +2,46 @@
 // O(n log n) guaranteed. Builds a max-heap, then plucks the largest in turn.
 
 import { beastFor } from '@/beasts/lore';
-import type { SortAlgorithm, SortState } from '../types';
+import type { OpCounts, SortAlgorithm, SortState } from '../types';
 import { generateArray } from '@/lib/workloadGen';
+
+function heapCount(input: number[]): OpCounts {
+  const arr = input.slice();
+  const n = arr.length;
+  let comparisons = 0;
+  let writes = 0;
+
+  function siftDown(start: number, end: number) {
+    let root = start;
+    while (root * 2 + 1 < end) {
+      let child = root * 2 + 1;
+      if (child + 1 < end) {
+        comparisons++;
+        if (arr[child] < arr[child + 1]) child++;
+      }
+      comparisons++;
+      if (arr[root] < arr[child]) {
+        const tmp = arr[root];
+        arr[root] = arr[child];
+        arr[child] = tmp;
+        writes += 2;
+        root = child;
+      } else {
+        break;
+      }
+    }
+  }
+
+  for (let start = Math.floor(n / 2) - 1; start >= 0; start--) siftDown(start, n);
+  for (let end = n - 1; end > 0; end--) {
+    const tmp = arr[0];
+    arr[0] = arr[end];
+    arr[end] = tmp;
+    writes += 2;
+    siftDown(0, end);
+  }
+  return { comparisons, writes };
+}
 
 function* heapSteps(input: number[]): Generator<SortState> {
   const arr = input.slice();
@@ -70,6 +108,7 @@ export const heapSort: SortAlgorithm = {
     return last ?? { array: input.slice(), comparisons: 0, writes: 0, done: true, highlights: {} };
   },
   steps: heapSteps,
+  count: heapCount,
   worstCaseInput: (size) => generateArray(size, 'reversed'),
   bestCaseInput: (size) => generateArray(size, 'sorted'),
 };

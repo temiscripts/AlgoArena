@@ -3,8 +3,31 @@
 // Use case: tiny inputs, classroom demos, and humbling other algorithms.
 
 import { beastFor } from '@/beasts/lore';
-import type { SortAlgorithm, SortState } from '../types';
+import type { OpCounts, SortAlgorithm, SortState } from '../types';
 import { generateArray } from '@/lib/workloadGen';
+
+function bubbleCount(input: number[]): OpCounts {
+  const arr = input.slice();
+  let comparisons = 0;
+  let writes = 0;
+  let n = arr.length;
+  for (let pass = 0; pass < arr.length - 1; pass++) {
+    let swapped = false;
+    for (let i = 0; i < n - 1; i++) {
+      comparisons++;
+      if (arr[i] > arr[i + 1]) {
+        const tmp = arr[i];
+        arr[i] = arr[i + 1];
+        arr[i + 1] = tmp;
+        writes += 2;
+        swapped = true;
+      }
+    }
+    n--;
+    if (!swapped) break;
+  }
+  return { comparisons, writes };
+}
 
 function* bubbleSteps(input: number[]): Generator<SortState> {
   const arr = input.slice();
@@ -53,6 +76,7 @@ export const bubbleSort: SortAlgorithm = {
     return last ?? { array: input.slice(), comparisons: 0, writes: 0, done: true, highlights: {} };
   },
   steps: bubbleSteps,
+  count: bubbleCount,
   worstCaseInput: (size) => generateArray(size, 'reversed'),
   bestCaseInput: (size) => generateArray(size, 'sorted'),
 };

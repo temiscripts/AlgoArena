@@ -12,6 +12,11 @@ export interface Algorithm<TInput, TState> {
   bestCaseInput(size: number): TInput;
 }
 
+export interface OpCounts {
+  comparisons: number;
+  writes: number;
+}
+
 export type SortEventKind =
   | 'compare'
   | 'swap'
@@ -30,4 +35,8 @@ export interface SortState {
   message?: string;
 }
 
-export type SortAlgorithm = Algorithm<number[], SortState>;
+export interface SortAlgorithm extends Algorithm<number[], SortState> {
+  /** Non-yielding op counter for Complexity Discovery; an order of magnitude
+   *  faster than draining the visualization generator. */
+  count(input: number[]): OpCounts;
+}

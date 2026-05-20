@@ -5,11 +5,19 @@ import { PathfindingArena } from './arenas/PathfindingArena';
 import { HallOfBeasts } from './pages/HallOfBeasts';
 import { AdversarialMode } from './modes/AdversarialMode';
 import { QuizMode } from './modes/QuizMode';
+import { ComplexityDiscovery } from './modes/ComplexityDiscovery';
 import { Home } from './pages/Home';
 import { useMuted } from './lib/useMuted';
 import { preloadAll } from './lib/sound';
 
-export type Page = 'home' | 'sorting' | 'pathfinding' | 'adversarial' | 'quiz' | 'hall';
+export type Page =
+  | 'home'
+  | 'sorting'
+  | 'pathfinding'
+  | 'adversarial'
+  | 'quiz'
+  | 'discovery'
+  | 'hall';
 
 const NAV: { id: Page; label: string }[] = [
   { id: 'home', label: 'Home' },
@@ -17,6 +25,7 @@ const NAV: { id: Page; label: string }[] = [
   { id: 'pathfinding', label: 'Pathfinding' },
   { id: 'adversarial', label: 'Adversarial' },
   { id: 'quiz', label: 'Big-O Trial' },
+  { id: 'discovery', label: 'Discovery' },
   { id: 'hall', label: 'Hall of Beasts' },
 ];
 
@@ -89,6 +98,7 @@ export default function App() {
         {page === 'pathfinding' && <PathfindingArena />}
         {page === 'adversarial' && <AdversarialMode />}
         {page === 'quiz' && <QuizMode />}
+        {page === 'discovery' && <ComplexityDiscovery />}
         {page === 'hall' && <HallOfBeasts />}
       </main>
 

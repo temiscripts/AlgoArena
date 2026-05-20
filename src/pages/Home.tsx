@@ -7,6 +7,7 @@ import { SortingPreview } from './previews/SortingPreview';
 import { PathfindingPreview } from './previews/PathfindingPreview';
 import { AdversarialPreview } from './previews/AdversarialPreview';
 import { QuizPreview } from './previews/QuizPreview';
+import { DiscoveryPreview } from './previews/DiscoveryPreview';
 import { HallPreview } from './previews/HallPreview';
 import { DemoCinematic } from './DemoCinematic';
 import { StatsTicker } from './StatsTicker';
@@ -53,6 +54,13 @@ const ARENAS: ArenaTile[] = [
     tagline: 'A nameless beast appears. Read its movement. Wager on its cost.',
     accent: 'crimson',
     Preview: QuizPreview,
+  },
+  {
+    id: 'discovery',
+    title: 'Complexity Discovery',
+    tagline: 'Force a beast through six battlefields. Watch the curve emerge. Name its law.',
+    accent: 'teal',
+    Preview: DiscoveryPreview,
   },
   {
     id: 'hall',

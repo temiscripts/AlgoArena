@@ -2,8 +2,28 @@
 // O(n) on nearly-sorted, O(n²) worst. The patient one.
 
 import { beastFor } from '@/beasts/lore';
-import type { SortAlgorithm, SortState } from '../types';
+import type { OpCounts, SortAlgorithm, SortState } from '../types';
 import { generateArray } from '@/lib/workloadGen';
+
+function insertionCount(input: number[]): OpCounts {
+  const arr = input.slice();
+  let comparisons = 0;
+  let writes = 0;
+  for (let i = 1; i < arr.length; i++) {
+    const key = arr[i];
+    let j = i - 1;
+    while (j >= 0) {
+      comparisons++;
+      if (arr[j] <= key) break;
+      arr[j + 1] = arr[j];
+      writes++;
+      j--;
+    }
+    arr[j + 1] = key;
+    writes++;
+  }
+  return { comparisons, writes };
+}
 
 function* insertionSteps(input: number[]): Generator<SortState> {
   const arr = input.slice();
@@ -54,6 +74,7 @@ export const insertionSort: SortAlgorithm = {
     return last ?? { array: input.slice(), comparisons: 0, writes: 0, done: true, highlights: {} };
   },
   steps: insertionSteps,
+  count: insertionCount,
   worstCaseInput: (size) => generateArray(size, 'reversed'),
   bestCaseInput: (size) => generateArray(size, 'sorted'),
 };
