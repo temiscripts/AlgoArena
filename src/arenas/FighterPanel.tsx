@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import clsx from 'clsx';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import type { SortAlgorithm, SortState } from '@/algorithms/types';
 import { useStepper } from '@/lib/stepper';
 import { SortCanvas } from './SortCanvas';
@@ -55,6 +56,27 @@ export function FighterPanel({ algo, input, speed, runId, paused, onFinish }: Pr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paused]);
 
+  const shakeControls = useAnimationControls();
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    if ((handle.state.highlights.swap?.length ?? 0) > 0) {
+      shakeControls.start({
+        x: [0, -2, 2, -1, 1, 0],
+        transition: { duration: 0.18 },
+      });
+    }
+  }, [handle.state, shakeControls, reduceMotion]);
+
+  useEffect(() => {
+    if (!handle.isDone || reduceMotion) return;
+    shakeControls.start({
+      scale: [1, 1.015, 1],
+      transition: { duration: 0.45 },
+    });
+  }, [handle.isDone, shakeControls, reduceMotion]);
+
   const accent = algo.beast.accent;
   const borderAccent =
     accent === 'crimson'
@@ -64,7 +86,10 @@ export function FighterPanel({ algo, input, speed, runId, paused, onFinish }: Pr
         : 'border-teal/40';
 
   return (
-    <div className={clsx('panel flex flex-col gap-3 p-4', borderAccent, handle.isDone && 'shadow-glow')}>
+    <motion.div
+      animate={shakeControls}
+      className={clsx('panel flex flex-col gap-3 p-4', borderAccent, handle.isDone && 'shadow-glow')}
+    >
       <div className="flex items-center justify-between gap-3">
         <BeastBadge beast={algo.beast} />
         <div className="flex items-center gap-4 text-right">
@@ -93,7 +118,7 @@ export function FighterPanel({ algo, input, speed, runId, paused, onFinish }: Pr
         </span>
         <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

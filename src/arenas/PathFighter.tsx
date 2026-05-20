@@ -1,8 +1,10 @@
 import { useEffect, useMemo } from 'react';
 import clsx from 'clsx';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import { useStepper } from '@/lib/stepper';
 import { makeInitialState, type PathAlgorithm, type PathInput, type PathState } from '@/algorithms/pathfinding/types';
 import { GridCanvas } from './GridCanvas';
+import { PathTracerOverlay } from './PathTracerOverlay';
 import { BeastBadge } from '@/components/BeastBadge';
 
 interface Props {
@@ -41,6 +43,16 @@ export function PathFighter({ algo, input, speed, runId, paused, cellPx = 14, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paused]);
 
+  const pulseControls = useAnimationControls();
+  const reduceMotion = useReducedMotion();
+  useEffect(() => {
+    if (!handle.isDone || reduceMotion) return;
+    pulseControls.start({
+      scale: handle.state.pathFound ? [1, 1.015, 1] : [1, 0.995, 1],
+      transition: { duration: 0.45 },
+    });
+  }, [handle.isDone, handle.state.pathFound, pulseControls, reduceMotion]);
+
   const accent = algo.beast.accent;
   const borderAccent =
     accent === 'crimson'
@@ -50,7 +62,10 @@ export function PathFighter({ algo, input, speed, runId, paused, cellPx = 14, on
         : 'border-teal/40';
 
   return (
-    <div className={clsx('panel flex flex-col gap-3 p-4', borderAccent, handle.isDone && 'shadow-glow')}>
+    <motion.div
+      animate={pulseControls}
+      className={clsx('panel flex flex-col gap-3 p-4', borderAccent, handle.isDone && 'shadow-glow')}
+    >
       <div className="flex items-center justify-between gap-3">
         <BeastBadge beast={algo.beast} />
         <div className="flex items-center gap-4 text-right">
@@ -63,7 +78,12 @@ export function PathFighter({ algo, input, speed, runId, paused, cellPx = 14, on
           />
         </div>
       </div>
-      <GridCanvas grid={input.grid} state={handle.state} accent={accent} cellPx={cellPx} />
+      <div className="relative">
+        <GridCanvas grid={input.grid} state={handle.state} accent={accent} cellPx={cellPx} />
+        {handle.state.pathFound && handle.isDone && (
+          <PathTracerOverlay grid={input.grid} path={handle.state.path} />
+        )}
+      </div>
       <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
         <span>
           {handle.isDone ? (
@@ -82,7 +102,7 @@ export function PathFighter({ algo, input, speed, runId, paused, cellPx = 14, on
         </span>
         <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

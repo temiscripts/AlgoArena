@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { SORT_ALGORITHM_LIST, getSort } from '@/algorithms';
 import { FighterPanel } from '@/arenas/FighterPanel';
 import { BeastCard } from '@/components/BeastCard';
@@ -15,14 +16,41 @@ export function AdversarialMode() {
   const worstInput = useMemo(() => algo.worstCaseInput(size), [algo, size]);
   const bestInput = useMemo(() => algo.bestCaseInput(size), [algo, size]);
 
+  const [flashKey, setFlashKey] = useState(0);
+
   const engage = () => {
     setFinishMs(null);
     setPaused(false);
     setRunId((r) => r + 1);
+    setFlashKey((k) => k + 1);
   };
 
+  const [flashVisible, setFlashVisible] = useState(false);
+  useEffect(() => {
+    if (flashKey === 0) return;
+    setFlashVisible(true);
+    const t = window.setTimeout(() => setFlashVisible(false), 350);
+    return () => window.clearTimeout(t);
+  }, [flashKey]);
+
   return (
-    <section className="flex flex-col gap-6">
+    <section className="relative flex flex-col gap-6">
+      <AnimatePresence>
+        {flashVisible && (
+          <motion.div
+            key={flashKey}
+            className="pointer-events-none fixed inset-0 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.55 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            style={{
+              background:
+                'radial-gradient(circle at center, rgba(196,50,43,0.6) 0%, rgba(196,50,43,0.0) 65%)',
+            }}
+          />
+        )}
+      </AnimatePresence>
       <header className="flex flex-col gap-2">
         <h2 className="font-display text-3xl tracking-widest uppercase text-crimson">
           Adversarial Mode
