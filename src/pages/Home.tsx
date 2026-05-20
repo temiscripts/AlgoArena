@@ -24,6 +24,12 @@ const ARENAS: { id: Page; title: string; tagline: string; accent: 'crimson' | 'g
     accent: 'gold',
   },
   {
+    id: 'quiz',
+    title: 'Big-O Trial',
+    tagline: 'A nameless beast appears. Read its movement. Wager on its cost.',
+    accent: 'crimson',
+  },
+  {
     id: 'hall',
     title: 'Hall of Beasts',
     tagline: 'Lore, stats, and tactics for every creature in the bestiary.',

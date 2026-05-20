@@ -4,17 +4,19 @@ import { SortingArena } from './arenas/SortingArena';
 import { PathfindingArena } from './arenas/PathfindingArena';
 import { HallOfBeasts } from './pages/HallOfBeasts';
 import { AdversarialMode } from './modes/AdversarialMode';
+import { QuizMode } from './modes/QuizMode';
 import { Home } from './pages/Home';
 import { useMuted } from './lib/useMuted';
 import { preloadAll } from './lib/sound';
 
-export type Page = 'home' | 'sorting' | 'pathfinding' | 'adversarial' | 'hall';
+export type Page = 'home' | 'sorting' | 'pathfinding' | 'adversarial' | 'quiz' | 'hall';
 
 const NAV: { id: Page; label: string }[] = [
   { id: 'home', label: 'Home' },
   { id: 'sorting', label: 'Sorting' },
   { id: 'pathfinding', label: 'Pathfinding' },
   { id: 'adversarial', label: 'Adversarial' },
+  { id: 'quiz', label: 'Big-O Trial' },
   { id: 'hall', label: 'Hall of Beasts' },
 ];
 
@@ -86,6 +88,7 @@ export default function App() {
         {page === 'sorting' && <SortingArena />}
         {page === 'pathfinding' && <PathfindingArena />}
         {page === 'adversarial' && <AdversarialMode />}
+        {page === 'quiz' && <QuizMode />}
         {page === 'hall' && <HallOfBeasts />}
       </main>
 
