@@ -5,6 +5,25 @@ dist-ssr
 *.tsbuildinfo
 .claude/
 
+# Audio source files; we ship the trimmed/encoded MP3s only.
+src/assets/sounds/*.wav
+src/assets/sounds/*.flac
+src/assets/sounds/*.ogg
+!src/assets/sounds/clang.mp3
+!src/assets/sounds/clash.mp3
+!src/assets/sounds/victory.mp3
+!src/assets/sounds/growl.mp3
+src/assets/sounds/*timbre*
+src/assets/sounds/*thatjeffcarter*
+src/assets/sounds/*erh*
+src/assets/sounds/*mickfire*
+src/assets/sounds/*jofae*
+src/assets/sounds/*trp*
+src/assets/sounds/*colorscrimsontears*
+src/assets/sounds/*vrymaa*
+src/assets/sounds/*lendrick*
+src/assets/sounds/*silverillusionist*
+
 .vscode/*
 !.vscode/extensions.json
 .idea

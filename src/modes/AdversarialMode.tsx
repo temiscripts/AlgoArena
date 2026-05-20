@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { SORT_ALGORITHM_LIST, getSort } from '@/algorithms';
 import { FighterPanel } from '@/arenas/FighterPanel';
 import { BeastCard } from '@/components/BeastCard';
+import { play } from '@/lib/sound';
 
 export function AdversarialMode() {
   const [algoId, setAlgoId] = useState('quick');
@@ -23,6 +24,7 @@ export function AdversarialMode() {
     setPaused(false);
     setRunId((r) => r + 1);
     setFlashKey((k) => k + 1);
+    play('growl');
   };
 
   const [flashVisible, setFlashVisible] = useState(false);

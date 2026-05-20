@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { SORT_ALGORITHM_LIST, getSort } from '@/algorithms';
 import { FighterPanel } from './FighterPanel';
 import { generateArray, type Workload } from '@/lib/workloadGen';
+import { play } from '@/lib/sound';
 
 const WORKLOADS: { id: Workload; label: string }[] = [
   { id: 'random', label: 'Random' },
@@ -40,6 +41,7 @@ export function SortingArena() {
     setRightFinish(null);
     setPaused(false);
     setRunId((r) => r + 1);
+    play('clash');
   };
 
   const newInput = () => {

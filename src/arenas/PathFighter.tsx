@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import { useStepper } from '@/lib/stepper';
+import { play } from '@/lib/sound';
 import { makeInitialState, type PathAlgorithm, type PathInput, type PathState } from '@/algorithms/pathfinding/types';
 import { GridCanvas } from './GridCanvas';
 import { PathTracerOverlay } from './PathTracerOverlay';
@@ -46,11 +47,14 @@ export function PathFighter({ algo, input, speed, runId, paused, cellPx = 14, on
   const pulseControls = useAnimationControls();
   const reduceMotion = useReducedMotion();
   useEffect(() => {
-    if (!handle.isDone || reduceMotion) return;
-    pulseControls.start({
-      scale: handle.state.pathFound ? [1, 1.015, 1] : [1, 0.995, 1],
-      transition: { duration: 0.45 },
-    });
+    if (!handle.isDone) return;
+    if (!reduceMotion) {
+      pulseControls.start({
+        scale: handle.state.pathFound ? [1, 1.015, 1] : [1, 0.995, 1],
+        transition: { duration: 0.45 },
+      });
+    }
+    if (handle.state.pathFound) play('victory');
   }, [handle.isDone, handle.state.pathFound, pulseControls, reduceMotion]);
 
   const accent = algo.beast.accent;

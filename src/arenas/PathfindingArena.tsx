@@ -4,6 +4,7 @@ import { PathFighter } from './PathFighter';
 import { GridCanvas } from './GridCanvas';
 import { generateGrid, type MazeStyle } from '@/lib/mazeGen';
 import { makeInitialState, type Grid } from '@/algorithms/pathfinding/types';
+import { play } from '@/lib/sound';
 
 const STYLES: { id: MazeStyle; label: string }[] = [
   { id: 'open', label: 'Open Field' },
@@ -42,6 +43,7 @@ export function PathfindingArena() {
     setPaused(false);
     setEditing(false);
     setRunId((r) => r + 1);
+    play('clash');
   };
 
   const newMaze = () => {

@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import type { SortAlgorithm, SortState } from '@/algorithms/types';
 import { useStepper } from '@/lib/stepper';
+import { play } from '@/lib/sound';
 import { SortCanvas } from './SortCanvas';
 import { BeastBadge } from '@/components/BeastBadge';
 
@@ -60,21 +61,26 @@ export function FighterPanel({ algo, input, speed, runId, paused, onFinish }: Pr
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
-    if (reduceMotion) return;
     if ((handle.state.highlights.swap?.length ?? 0) > 0) {
-      shakeControls.start({
-        x: [0, -2, 2, -1, 1, 0],
-        transition: { duration: 0.18 },
-      });
+      if (!reduceMotion) {
+        shakeControls.start({
+          x: [0, -2, 2, -1, 1, 0],
+          transition: { duration: 0.18 },
+        });
+      }
+      play('clang');
     }
   }, [handle.state, shakeControls, reduceMotion]);
 
   useEffect(() => {
-    if (!handle.isDone || reduceMotion) return;
-    shakeControls.start({
-      scale: [1, 1.015, 1],
-      transition: { duration: 0.45 },
-    });
+    if (!handle.isDone) return;
+    if (!reduceMotion) {
+      shakeControls.start({
+        scale: [1, 1.015, 1],
+        transition: { duration: 0.45 },
+      });
+    }
+    play('victory');
   }, [handle.isDone, shakeControls, reduceMotion]);
 
   const accent = algo.beast.accent;
