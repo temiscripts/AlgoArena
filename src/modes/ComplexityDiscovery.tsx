@@ -123,7 +123,7 @@ export function ComplexityDiscovery() {
             >
               {SORT_ALGORITHM_LIST.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.beast.name}
+                  {a.beast.algoName} — {a.beast.name}
                 </option>
               ))}
             </select>

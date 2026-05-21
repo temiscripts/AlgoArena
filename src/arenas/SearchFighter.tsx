@@ -89,23 +89,32 @@ export function SearchFighter({ algo, input, speed, runId, paused, onFinish }: P
         </div>
       </div>
       <SearchCanvas array={input.array} target={input.target} state={handle.state} accent={accent} />
-      <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
-        <span>
-          {handle.isDone ? (
-            handle.state.found ? (
-              <span className="text-gold">Quarry Caught</span>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
+          <span>
+            {handle.isDone ? (
+              handle.state.found ? (
+                <span className="text-gold">
+                  Quarry caught · {handle.state.comparisons} comparison{handle.state.comparisons === 1 ? '' : 's'}
+                </span>
+              ) : (
+                <span className="text-crimson">
+                  Lost the scent · {handle.state.comparisons} comparison{handle.state.comparisons === 1 ? '' : 's'}
+                </span>
+              )
+            ) : handle.isRunning ? (
+              <span>Hunting · {handle.state.comparisons} comparison{handle.state.comparisons === 1 ? '' : 's'}</span>
+            ) : runId === 0 ? (
+              <span>Standing by</span>
             ) : (
-              <span className="text-crimson">Lost the Scent</span>
-            )
-          ) : handle.isRunning ? (
-            <span>Hunting…</span>
-          ) : runId === 0 ? (
-            <span>Standing by</span>
-          ) : (
-            <span>Paused</span>
-          )}
-        </span>
-        <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
+              <span>Paused</span>
+            )}
+          </span>
+          <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
+        </div>
+        <div className="text-[0.7rem] leading-snug text-parchment/55">
+          {algo.beast.algoDescription}
+        </div>
       </div>
     </motion.div>
   );

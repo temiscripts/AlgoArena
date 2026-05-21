@@ -8,6 +8,11 @@ export interface BeastStats {
 
 export interface BeastMetadata {
   algorithmId: string;
+  /** Real, neutral algorithm name (e.g. "Quick Sort", "A* Search"). */
+  algoName: string;
+  /** One- to two-sentence plain-English explanation of how it works. */
+  algoDescription: string;
+  /** Beast persona — used in dropdowns alongside algoName. */
   name: string;
   title: string;
   tagline: string;
@@ -28,6 +33,9 @@ export interface BeastMetadata {
 export const BEASTS: Record<string, BeastMetadata> = {
   bubble: {
     algorithmId: 'bubble',
+    algoName: 'Bubble Sort',
+    algoDescription:
+      'Walks the array repeatedly, swapping any pair of neighbours that are out of order until no swaps are needed. Simple but slow on large or shuffled inputs.',
     name: 'Bubblesnail',
     title: 'The Plodder',
     tagline: 'Slow. Stubborn. Inevitable.',
@@ -41,6 +49,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   insertion: {
     algorithmId: 'insertion',
+    algoName: 'Insertion Sort',
+    algoDescription:
+      'Treats the array as a growing sorted prefix and slides each new element back to its correct place. Excellent on nearly-sorted data, quadratic on chaos.',
     name: 'Cardweaver',
     title: 'Hand of the Dealer',
     tagline: 'Each card finds its place.',
@@ -54,6 +65,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   merge: {
     algorithmId: 'merge',
+    algoName: 'Merge Sort',
+    algoDescription:
+      'Splits the array in half recursively, sorts each half, then merges them back together in order. Guaranteed O(n log n) on any input — at the cost of O(n) extra memory.',
     name: 'The Twin Wyrms',
     title: 'Of Divided Skies',
     tagline: 'Two halves. One song.',
@@ -67,6 +81,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   quick: {
     algorithmId: 'quick',
+    algoName: 'Quick Sort',
+    algoDescription:
+      'Picks a pivot, partitions the array into smaller-than and larger-than halves, then recurses on each. Fastest sort on average — but a bad pivot choice degrades it to O(n²).',
     name: 'Lightning Adder',
     title: 'Strike of the Pivot',
     tagline: 'Pick. Strike. Sunder.',
@@ -80,6 +97,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   heap: {
     algorithmId: 'heap',
+    algoName: 'Heap Sort',
+    algoDescription:
+      'Builds a max-heap from the array, then repeatedly removes the largest element and rebuilds the heap. In-place and guaranteed O(n log n) on any input.',
     name: 'The Pyrelord',
     title: 'Crowned in Ash',
     tagline: 'The largest burns last.',
@@ -93,6 +113,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   bfs: {
     algorithmId: 'bfs',
+    algoName: 'Breadth-First Search (BFS)',
+    algoDescription:
+      'Explores the grid in concentric waves, visiting every cell at distance 1, then distance 2, and so on. Guarantees the shortest path on unweighted maps.',
     name: 'Tidecaller',
     title: 'Of the Hundred Mouths',
     tagline: 'Floods every passage at once.',
@@ -106,6 +129,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   dfs: {
     algorithmId: 'dfs',
+    algoName: 'Depth-First Search (DFS)',
+    algoDescription:
+      'Plunges down one corridor until it hits a dead end, then backtracks to the last junction and tries another. Finds *a* path quickly — not necessarily the shortest.',
     name: 'Shadowdelver',
     title: 'Of the Long Corridor',
     tagline: 'Plunges. Retreats. Plunges again.',
@@ -119,6 +145,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   dijkstra: {
     algorithmId: 'dijkstra',
+    algoName: "Dijkstra's Algorithm",
+    algoDescription:
+      'Checks all paths by accumulated distance using a priority queue, expanding the cheapest unexplored cell next. Finds the shortest weighted path with no shortcuts.',
     name: 'The Cartographer',
     title: 'Keeper of Distances',
     tagline: 'Measures every road before walking it.',
@@ -132,6 +161,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   astar: {
     algorithmId: 'astar',
+    algoName: 'A* Search',
+    algoDescription:
+      "Like Dijkstra, but adds a heuristic estimate of distance to the goal and prioritises promising cells. Faster than BFS/Dijkstra when the heuristic is good — its quality is everything.",
     name: 'The Oracle',
     title: 'Whose Eyes See the End',
     tagline: 'Sees the destination. Walks toward it.',
@@ -145,6 +177,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   linear: {
     algorithmId: 'linear',
+    algoName: 'Linear Search',
+    algoDescription:
+      'Walks the array from start to finish, comparing each element to the target. Works on any data, sorted or not — but slow on large inputs.',
     name: 'The Plodseeker',
     title: 'Tracker of Footsteps',
     tagline: 'One door at a time.',
@@ -158,6 +193,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   binary: {
     algorithmId: 'binary',
+    algoName: 'Binary Search',
+    algoDescription:
+      'Halves the remaining search space each step by comparing the target to the middle element. Requires the array to be sorted — finds anything in log n questions.',
     name: 'The Cleaver',
     title: 'Halver of Worlds',
     tagline: 'Above. Below. Choose.',
@@ -171,6 +209,9 @@ export const BEASTS: Record<string, BeastMetadata> = {
   },
   interpolation: {
     algorithmId: 'interpolation',
+    algoName: 'Interpolation Search',
+    algoDescription:
+      'Estimates where the target should sit based on the lo/hi values and the target itself, then jumps there. Near-instant on uniform data; degrades to linear when values cluster.',
     name: 'The Surveyor',
     title: 'Reader of Distances',
     tagline: 'Guess from the gap.',

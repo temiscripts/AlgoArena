@@ -50,13 +50,21 @@ export function BeastCard({ beast }: Props) {
           <div className="text-[0.7rem] uppercase tracking-[0.25em] text-parchment/50">
             {beast.title}
           </div>
+          <div className="mt-1 font-mono text-[0.75rem] uppercase tracking-[0.18em] text-parchment">
+            {beast.algoName}
+          </div>
         </div>
         <div className={clsx('font-display text-4xl leading-none', ACCENT_TEXT[accent])} aria-hidden>
           {beast.sigil}
         </div>
       </header>
 
-      <p className="text-sm leading-relaxed text-parchment/80">{beast.lore}</p>
+      <div className="rounded-md border border-bone/40 bg-ink/30 p-3 text-sm leading-relaxed text-parchment/90">
+        <div className="stat-label mb-1">How it works</div>
+        {beast.algoDescription}
+      </div>
+
+      <p className="text-sm leading-relaxed text-parchment/70 italic">{beast.lore}</p>
 
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div>

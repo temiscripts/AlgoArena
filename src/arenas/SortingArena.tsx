@@ -4,6 +4,8 @@ import { FighterPanel } from './FighterPanel';
 import { generateArray, type Workload } from '@/lib/workloadGen';
 import { play } from '@/lib/sound';
 import { buildShareUrl, copyText, readBattleFromHash } from '@/lib/battleUrl';
+import { ArenaHint } from '@/components/ArenaHint';
+import { InfoButton } from '@/components/InfoButton';
 
 const WORKLOADS: { id: Workload; label: string }[] = [
   { id: 'random', label: 'Random' },
@@ -96,9 +98,27 @@ export function SortingArena() {
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 className="font-display text-3xl tracking-widest uppercase text-parchment">
-            Sorting Arena
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-display text-3xl tracking-widest uppercase text-parchment">
+              Sorting Arena
+            </h2>
+            <InfoButton id="sorting" title="What am I seeing?">
+              <p>
+                Two sorting algorithms race on the same array. Each bar is one element; the height
+                is its value. The algorithm finishes when every bar is in ascending order.
+              </p>
+              <p>
+                <span className="text-parchment">White / pale cells</span> are being compared this
+                step. <span className="text-crimson">Crimson</span> means a swap. <span className="text-gold">Gold</span> is the pivot for Quick Sort or any element being placed. <span className="text-teal">Teal</span>{' '}
+                are already in their final position.
+              </p>
+              <p>
+                Try switching the <span className="text-parchment">Workload</span> to{' '}
+                <span className="text-parchment">Sorted</span> and watch what happens to Quick Sort
+                — its worst case lives there.
+              </p>
+            </InfoButton>
+          </div>
           <p className="text-sm text-parchment/60">
             Two beasts. One array. The first to order all elements wins.
           </p>
@@ -169,6 +189,12 @@ export function SortingArena() {
           </div>
         </div>
       </header>
+
+      <ArenaHint
+        id="sorting-intro"
+        message="Each algorithm is represented as a beast. Pick two below and watch them compete on the same input — the first to fully sort wins."
+        externalDismissCount={runId}
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <Picker label="Left" value={leftId} onChange={setLeftId} />
@@ -255,7 +281,7 @@ function Picker({
       >
         {SORT_ALGORITHM_LIST.map((a) => (
           <option key={a.id} value={a.id}>
-            {a.beast.name}
+            {a.beast.algoName} — {a.beast.name}
           </option>
         ))}
       </select>

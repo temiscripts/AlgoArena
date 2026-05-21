@@ -6,6 +6,8 @@ import { generateGrid, type MazeStyle } from '@/lib/mazeGen';
 import { makeInitialState, type Grid } from '@/algorithms/pathfinding/types';
 import { play } from '@/lib/sound';
 import { buildShareUrl, copyText, readBattleFromHash } from '@/lib/battleUrl';
+import { ArenaHint } from '@/components/ArenaHint';
+import { InfoButton } from '@/components/InfoButton';
 
 const STYLES: { id: MazeStyle; label: string }[] = [
   { id: 'open', label: 'Open Field' },
@@ -25,7 +27,7 @@ export function PathfindingArena() {
   const [rightId, setRightId] = useState(initialPath?.right ?? 'dijkstra');
   const [style, setStyle] = useState<MazeStyle>(initialPath?.style ?? 'sparse-walls');
   const [seed, setSeed] = useState(initialPath?.seed ?? 1);
-  const [speed, setSpeed] = useState(initialPath?.speed ?? 4);
+  const [speed, setSpeed] = useState(initialPath?.speed ?? 2);
   const [runId, setRunId] = useState(0);
   const [paused, setPaused] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -103,31 +105,78 @@ export function PathfindingArena() {
     [grid],
   );
 
-  // Verdict: prefer the explorer that touched fewer cells; tie-break on time.
-  let verdict: string | null = null;
-  if (leftFinish && rightFinish) {
+  // Summary panel content — both panels finished. Spelled out as a learning moment.
+  const summary = (() => {
+    if (!leftFinish || !rightFinish) return null;
+    const leftLabel = `${leftAlgo.beast.name} (${leftAlgo.beast.algoName})`;
+    const rightLabel = `${rightAlgo.beast.name} (${rightAlgo.beast.algoName})`;
+
     if (!leftFinish.found && !rightFinish.found) {
-      verdict = 'Neither beast reached the goal.';
-    } else if (leftFinish.found && !rightFinish.found) {
-      verdict = `${leftAlgo.beast.name} found the only path.`;
-    } else if (!leftFinish.found && rightFinish.found) {
-      verdict = `${rightAlgo.beast.name} found the only path.`;
-    } else if (leftFinish.expansions < rightFinish.expansions) {
-      verdict = `${leftAlgo.beast.name} reached the goal exploring ${rightFinish.expansions - leftFinish.expansions} fewer cells.`;
-    } else if (rightFinish.expansions < leftFinish.expansions) {
-      verdict = `${rightAlgo.beast.name} reached the goal exploring ${leftFinish.expansions - rightFinish.expansions} fewer cells.`;
-    } else {
-      verdict = 'Both beasts touched the same number of cells.';
+      return {
+        headline: 'Neither beast reached the goal.',
+        body: 'The walls cut every route between the start and the end. Lift some walls or pick a less hostile maze.',
+        tone: 'crimson' as const,
+      };
     }
-  }
+    if (leftFinish.found !== rightFinish.found) {
+      const winner = leftFinish.found ? leftLabel : rightLabel;
+      return {
+        headline: `${winner} found the only path.`,
+        body: 'Only one beast actually reached the goal. The other gave up — try a different maze if that surprises you.',
+        tone: 'gold' as const,
+      };
+    }
+    if (leftFinish.expansions === rightFinish.expansions) {
+      return {
+        headline: 'Both beasts touched the same number of cells.',
+        body: 'On this maze the two algorithms had no efficiency advantage over each other.',
+        tone: 'gold' as const,
+      };
+    }
+    const leftWins = leftFinish.expansions < rightFinish.expansions;
+    const winnerFin = leftWins ? leftFinish : rightFinish;
+    const loserFin = leftWins ? rightFinish : leftFinish;
+    const winner = leftWins ? leftLabel : rightLabel;
+    const loser = leftWins ? rightLabel : leftLabel;
+    const ratio = loserFin.expansions / Math.max(1, winnerFin.expansions);
+    const ratioText = ratio >= 2 ? ` — ${ratio.toFixed(1)}× more efficient` : '';
+    return {
+      headline: `${winner} explored ${winnerFin.expansions.toLocaleString()} cells to find a path of length ${winnerFin.pathLen}. ${loser} explored ${loserFin.expansions.toLocaleString()} cells${ratioText}.`,
+      body: ratio >= 2
+        ? `${winner} reached the same goal touching far fewer cells. That is the lesson of pathfinding — fewer explored cells = less work for the same answer.`
+        : `The two algorithms were close in efficiency on this maze. Try Open Field for the biggest visual gap, or a denser maze for a different lesson.`,
+      tone: 'gold' as const,
+    };
+  })();
 
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 className="font-display text-3xl tracking-widest uppercase text-parchment">
-            Pathfinding Arena
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-display text-3xl tracking-widest uppercase text-parchment">
+              Pathfinding Arena
+            </h2>
+            <InfoButton id="pathfinding" title="What am I seeing?">
+              <p>
+                Two pathfinding algorithms race through the same maze. Each beast represents a
+                classic algorithm — pick any two and watch them search.
+              </p>
+              <p>
+                <span className="text-parchment">Yellow / coloured cells</span> show where each
+                algorithm has searched. The <span className="text-gold">white-gold line</span> at
+                the end is the final path. The <span className="text-teal">teal cell</span> is the
+                start; the <span className="text-crimson">crimson cell</span> is the goal.
+              </p>
+              <p>
+                <span className="text-parchment">A* (The Oracle)</span> uses a heuristic to head
+                straight toward the goal. <span className="text-parchment">Dijkstra</span>{' '}
+                explores all directions equally by distance. <span className="text-parchment">BFS</span>{' '}
+                floods in waves. <span className="text-parchment">DFS</span> dives down one corridor
+                at a time. Watch how A* usually explores far fewer cells to find the same path.
+              </p>
+            </InfoButton>
+          </div>
           <p className="text-sm text-parchment/60">
             Same maze. Same goal. Different minds. Click cells in the editor below to lay walls.
           </p>
@@ -188,6 +237,12 @@ export function PathfindingArena() {
         </div>
       </header>
 
+      <ArenaHint
+        id="pathfinding-intro"
+        message="Each algorithm is represented as a beast. Pick two below and watch them search the same maze — coloured cells are explored, the gold line is the final path."
+        externalDismissCount={runId}
+      />
+
       <div className="flex flex-wrap items-center gap-3">
         <Picker label="Left" value={leftId} onChange={setLeftId} />
         <Picker label="Right" value={rightId} onChange={setRightId} />
@@ -202,12 +257,9 @@ export function PathfindingArena() {
             Clear Edits
           </button>
         )}
-        {verdict && (
-          <div className="ml-auto font-display text-sm tracking-widest uppercase text-gold">
-            {verdict}
-          </div>
-        )}
       </div>
+
+      <ColorLegend />
 
       {editing ? (
         <div className="panel flex flex-col gap-3 p-4">
@@ -247,7 +299,55 @@ export function PathfindingArena() {
           />
         </div>
       )}
+
+      {summary && !editing && (
+        <div className={
+          summary.tone === 'crimson'
+            ? 'panel border-crimson/60 p-4'
+            : 'panel border-gold/60 p-4 shadow-glow'
+        }>
+          <div className={
+            summary.tone === 'crimson'
+              ? 'font-display text-xs uppercase tracking-[0.3em] text-crimson'
+              : 'font-display text-xs uppercase tracking-[0.3em] text-gold'
+          }>
+            Race summary
+          </div>
+          <div className="mt-2 text-sm text-parchment">{summary.headline}</div>
+          <p className="mt-2 text-sm leading-relaxed text-parchment/70">{summary.body}</p>
+        </div>
+      )}
     </section>
+  );
+}
+
+function ColorLegend() {
+  const items: { label: string; meaning: string; swatch: string; ring?: string }[] = [
+    { label: 'Start', meaning: 'Where the search begins', swatch: '#5fb3a1' },
+    { label: 'Goal', meaning: 'Where it must reach', swatch: '#c4322b' },
+    { label: 'Wall', meaning: 'Impassable cell', swatch: '#3a3a44' },
+    { label: 'Unexplored', meaning: 'Not yet visited', swatch: '#1a1a22', ring: 'border-bone/40' },
+    { label: 'Explored', meaning: 'Algorithm has checked here', swatch: '#3d3210' },
+    { label: 'Final path', meaning: 'Route from start to goal', swatch: '#d4af37' },
+  ];
+  return (
+    <div className="panel grid grid-cols-2 gap-2 p-3 text-xs md:grid-cols-3 lg:grid-cols-6">
+      {items.map((it) => (
+        <div key={it.label} className="flex items-center gap-2">
+          <span
+            className={`inline-block h-4 w-4 rounded-sm border ${it.ring ?? 'border-transparent'}`}
+            style={{ background: it.swatch }}
+            aria-hidden
+          />
+          <span className="flex flex-col leading-tight">
+            <span className="font-display text-[0.65rem] uppercase tracking-[0.2em] text-parchment">
+              {it.label}
+            </span>
+            <span className="font-mono text-[0.6rem] text-parchment/50">{it.meaning}</span>
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -298,7 +398,7 @@ function Picker({
       >
         {PATH_ALGORITHM_LIST.map((a) => (
           <option key={a.id} value={a.id}>
-            {a.beast.name}
+            {a.beast.algoName} — {a.beast.name}
           </option>
         ))}
       </select>

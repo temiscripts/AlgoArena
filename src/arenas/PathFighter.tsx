@@ -88,26 +88,50 @@ export function PathFighter({ algo, input, speed, runId, paused, cellPx = 14, on
           <PathTracerOverlay grid={input.grid} path={handle.state.path} />
         )}
       </div>
-      <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
-        <span>
-          {handle.isDone ? (
-            handle.state.pathFound ? (
-              <span className="text-gold">Path Found</span>
-            ) : (
-              <span className="text-crimson">No Path</span>
-            )
-          ) : handle.isRunning ? (
-            <span>Searching…</span>
-          ) : runId === 0 ? (
-            <span>Standing by</span>
-          ) : (
-            <span>Paused</span>
-          )}
-        </span>
-        <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
+          <span>{statusLine(runId, handle.isRunning, handle.isDone, handle.state.pathFound, handle.state.expansions, handle.state.path.length)}</span>
+          <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
+        </div>
+        <div className={clsx('text-[0.7rem] italic leading-snug',
+          accent === 'crimson' ? 'text-crimson/80' : accent === 'gold' ? 'text-gold/80' : 'text-teal/80')}>
+          {PATH_TACTIC[algo.id] ?? ''}
+        </div>
+        <div className="text-[0.7rem] leading-snug text-parchment/55">
+          {algo.beast.algoDescription}
+        </div>
       </div>
     </motion.div>
   );
+}
+
+const PATH_TACTIC: Record<string, string> = {
+  bfs: 'Expanding outward in equal waves — guarantees the shortest path.',
+  dfs: 'Plunging down a single corridor before backtracking.',
+  dijkstra: 'Checking all paths by accumulated distance — no shortcuts.',
+  astar: 'Using a heuristic — prioritising cells closer to the goal.',
+};
+
+function statusLine(
+  runId: number,
+  isRunning: boolean,
+  isDone: boolean,
+  pathFound: boolean,
+  expansions: number,
+  pathLen: number,
+) {
+  if (runId === 0) return <span>Standing by</span>;
+  if (isDone) {
+    return pathFound ? (
+      <span className="text-gold">Path found · {pathLen} cells, explored {expansions} total</span>
+    ) : (
+      <span className="text-crimson">No path · explored {expansions} cells</span>
+    );
+  }
+  if (isRunning) {
+    return <span>Exploring · {expansions} cells checked</span>;
+  }
+  return <span>Paused · {expansions} cells</span>;
 }
 
 function Stat({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {

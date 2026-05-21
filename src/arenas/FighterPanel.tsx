@@ -110,19 +110,24 @@ export function FighterPanel({ algo, input, speed, runId, paused, onFinish }: Pr
         </div>
       </div>
       <SortCanvas state={handle.state} accent={accent} />
-      <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
-        <span>
-          {handle.isDone ? (
-            <span className="text-gold">Victorious</span>
-          ) : handle.isRunning ? (
-            <span>Engaging…</span>
-          ) : runId === 0 ? (
-            <span>Standing by</span>
-          ) : (
-            <span>Paused</span>
-          )}
-        </span>
-        <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
+          <span>
+            {handle.isDone ? (
+              <span className="text-gold">Victorious</span>
+            ) : handle.isRunning ? (
+              <span>Engaging…</span>
+            ) : runId === 0 ? (
+              <span>Standing by</span>
+            ) : (
+              <span>Paused</span>
+            )}
+          </span>
+          <span className="font-mono text-parchment/40">{algo.beast.complexity.average} avg</span>
+        </div>
+        <div className="text-[0.7rem] leading-snug text-parchment/55">
+          {algo.beast.algoDescription}
+        </div>
       </div>
     </motion.div>
   );

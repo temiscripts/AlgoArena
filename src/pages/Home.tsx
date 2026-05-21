@@ -24,6 +24,8 @@ interface ArenaTile {
   id: Page;
   title: string;
   tagline: string;
+  /** Plain-English one-liner explaining what the page actually does. */
+  subtitle: string;
   accent: Accent;
   Preview: React.ComponentType;
 }
@@ -33,6 +35,7 @@ const ARENAS: ArenaTile[] = [
     id: 'sorting',
     title: 'Sorting Arena',
     tagline: 'Watch five beasts wrestle order out of chaos. Pick any two and race.',
+    subtitle: 'Race 5 classic sorting algorithms on the same array.',
     accent: 'crimson',
     Preview: SortingPreview,
   },
@@ -40,6 +43,7 @@ const ARENAS: ArenaTile[] = [
     id: 'pathfinding',
     title: 'Pathfinding Arena',
     tagline: 'BFS floods. DFS dives. Dijkstra weighs. The Oracle simply knows.',
+    subtitle: 'Race 4 classic pathfinding algorithms through custom mazes.',
     accent: 'teal',
     Preview: PathfindingPreview,
   },
@@ -47,6 +51,7 @@ const ARENAS: ArenaTile[] = [
     id: 'searching',
     title: 'Searching Arena',
     tagline: 'One sorted line. One target. The beast that asks fewest wins.',
+    subtitle: 'Race 3 search algorithms — linear, binary, and interpolation.',
     accent: 'teal',
     Preview: SearchingPreview,
   },
@@ -54,6 +59,7 @@ const ARENAS: ArenaTile[] = [
     id: 'adversarial',
     title: 'Adversarial Mode',
     tagline: 'Every beast has a nightmare. Summon the worst input. Watch it fall.',
+    subtitle: 'Pick a sort and run it on its worst-case input next to its best case.',
     accent: 'gold',
     Preview: AdversarialPreview,
   },
@@ -61,6 +67,7 @@ const ARENAS: ArenaTile[] = [
     id: 'tournament',
     title: 'Tournament',
     tagline: 'Four beasts. Two semifinals. One throne. Pick the bracket and crown a champion.',
+    subtitle: 'Single-elimination bracket — winner is whoever finishes with fewer comparisons.',
     accent: 'crimson',
     Preview: TournamentPreview,
   },
@@ -68,6 +75,7 @@ const ARENAS: ArenaTile[] = [
     id: 'quiz',
     title: 'Big-O Trial',
     tagline: 'A nameless beast appears. Read its movement. Wager on its cost.',
+    subtitle: 'Identify an algorithm’s Big-O complexity from how it runs.',
     accent: 'crimson',
     Preview: QuizPreview,
   },
@@ -75,6 +83,7 @@ const ARENAS: ArenaTile[] = [
     id: 'discovery',
     title: 'Complexity Discovery',
     tagline: 'Force a beast through six battlefields. Watch the curve emerge. Name its law.',
+    subtitle: 'Measure a sort at 6 input sizes and fit a curve to reveal its complexity class.',
     accent: 'teal',
     Preview: DiscoveryPreview,
   },
@@ -82,6 +91,7 @@ const ARENAS: ArenaTile[] = [
     id: 'hall',
     title: 'Hall of Beasts',
     tagline: 'Lore, stats, and tactics for every creature in the bestiary.',
+    subtitle: 'Browse every algorithm with its complexity, strengths, and weaknesses.',
     accent: 'gold',
     Preview: HallPreview,
   },
@@ -200,7 +210,10 @@ export function Home({ navigate }: Props) {
               >
                 {arena.title}
               </h2>
-              <p className="text-sm text-parchment/70">{arena.tagline}</p>
+              <p className="text-[0.7rem] uppercase tracking-[0.18em] text-parchment/55">
+                {arena.subtitle}
+              </p>
+              <p className="text-sm italic text-parchment/75">{arena.tagline}</p>
               <span className="mt-1 text-[0.65rem] uppercase tracking-[0.3em] text-parchment/40 transition group-hover:text-parchment/80">
                 Enter →
               </span>

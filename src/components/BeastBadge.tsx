@@ -30,10 +30,13 @@ export function BeastBadge({ beast, compact = false }: Props) {
       <div className="min-w-0">
         <div className="font-display text-sm tracking-widest uppercase">{beast.name}</div>
         {!compact && (
-          <div className="text-[0.65rem] uppercase tracking-[0.25em] text-parchment/50">
+          <div className="text-[0.6rem] uppercase tracking-[0.25em] text-parchment/50">
             {beast.title}
           </div>
         )}
+        <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-parchment/70">
+          {beast.algoName}
+        </div>
       </div>
     </div>
   );

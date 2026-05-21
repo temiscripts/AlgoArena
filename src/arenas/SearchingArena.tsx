@@ -3,6 +3,8 @@ import { SEARCH_ALGORITHM_LIST, getSearch } from '@/algorithms';
 import { SearchFighter } from './SearchFighter';
 import { generateArray, type Workload } from '@/lib/workloadGen';
 import { play } from '@/lib/sound';
+import { ArenaHint } from '@/components/ArenaHint';
+import { InfoButton } from '@/components/InfoButton';
 
 type TargetMode = 'first' | 'middle' | 'last' | 'random' | 'missing';
 
@@ -112,9 +114,27 @@ export function SearchingArena() {
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 className="font-display text-3xl tracking-widest uppercase text-parchment">
-            Searching Arena
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-display text-3xl tracking-widest uppercase text-parchment">
+              Searching Arena
+            </h2>
+            <InfoButton id="searching" title="What am I seeing?">
+              <p>
+                Two search algorithms hunt the same target across the same sorted array. Each
+                vertical bar is one element; its height is its value.
+              </p>
+              <p>
+                <span className="text-parchment">White</span> is the element being checked right now.
+                <span className="text-crimson"> Crimson</span> are elements already checked. <span className="text-gold">Gold</span> appears when the target is found.
+              </p>
+              <p>
+                Try switching the <span className="text-parchment">Target</span> to{' '}
+                <span className="text-parchment">Last Element</span>: linear search has to scan
+                everything, binary search needs about <code>log₂(n)</code> comparisons, and
+                interpolation jumps almost directly there on uniform data.
+              </p>
+            </InfoButton>
+          </div>
           <p className="text-sm text-parchment/60">
             One sorted line. One target. The beast that asks the fewest questions wins.
           </p>
@@ -164,6 +184,12 @@ export function SearchingArena() {
           </div>
         </div>
       </header>
+
+      <ArenaHint
+        id="searching-intro"
+        message="Each algorithm is represented as a beast. Pick two below and watch them hunt the same target — whichever asks fewer comparisons wins."
+        externalDismissCount={runId}
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <BeastPicker label="Left" value={leftId} onChange={setLeftId} />
@@ -273,7 +299,7 @@ function BeastPicker({
       >
         {SEARCH_ALGORITHM_LIST.map((a) => (
           <option key={a.id} value={a.id}>
-            {a.beast.name}
+            {a.beast.algoName} — {a.beast.name}
           </option>
         ))}
       </select>
